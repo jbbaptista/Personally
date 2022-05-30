@@ -74,11 +74,16 @@ size_sma_100 = len(sma_100)
 
 ratio_list_100 = list()
 ratio_list_50 = list()
+ratio_list_100_percentage = list()
 
 zeros = list()
+half = list()
 hundreds = list()
+oneandhalf = list()
 twohundreds = list()
+halfnegative = list()
 hundreds_negatives = list()
+oneandhalfnegative = list()
 twohundreds_negatives = list()
 
 for i in range(len(market_price)):
@@ -86,34 +91,61 @@ for i in range(len(market_price)):
     sma_20_value = sma_20[i]
     sma_50_value = sma_50[i]
     sma_100_value = sma_100[i]
-
+    '''
+    Create some edition to try new approach
+    '''
     ratio_100 = float(price_value) - float(sma_100_value)
     ratio_list_100.append(ratio_100)
+
+    ratio_100_percentage = (float(price_value) - float(sma_100_value))/float(price_value)
+    ratio_list_100_percentage.append(ratio_100_percentage)
 
     ratio_50 = float(price_value) - float(sma_50_value)
     ratio_list_50.append(ratio_50)
 
     zeros.append(0)
-    hundreds.append(10)
-    twohundreds.append(20)
-    hundreds_negatives.append(-10)
-    twohundreds_negatives.append(-20)
+    half.append(0.1)
+    hundreds.append(0.2)
+    oneandhalf.append(0.3)
+    twohundreds.append(0.4)
+    halfnegative.append(-0.1)
+    hundreds_negatives.append(-0.2)
+    oneandhalfnegative.append(-0.3)
+    twohundreds_negatives.append(-0.4)
 
 
-plt.subplot(2,1,1)
+plt.subplot(3,1,1)
 plt.title(table)
 plt.plot(range(size_market_price), market_price)
 plt.plot(range(size_sma_20), sma_20)
 plt.plot(range(size_sma_50), sma_50)
 plt.plot(range(size_sma_100), sma_100)
 
-plt.subplot(2,1,2)
+plt.subplot(3,1,2)
 plt.plot(range(size_market_price), ratio_list_100, label='Market_price - SMA_100')
 plt.plot(range(size_market_price), zeros)
 # plt.plot(range(size_market_price), ratio_list_50, label='SMA_50')
+
+# plt.plot(range(size_market_price), half)
+# plt.plot(range(size_market_price), hundreds)
+# plt.plot(range(size_market_price), oneandhalf)
+# plt.plot(range(size_market_price), twohundreds)
+# plt.plot(range(size_market_price), halfnegative)
+# plt.plot(range(size_market_price), hundreds_negatives)
+# plt.plot(range(size_market_price), oneandhalfnegative)
+# plt.plot(range(size_market_price), twohundreds_negatives)
+
+plt.subplot(3,1,3)
+plt.plot(range(size_market_price), ratio_list_100_percentage, label='Market_price - SMA_100 %')
+
+plt.plot(range(size_market_price), zeros)
+plt.plot(range(size_market_price), half)
 plt.plot(range(size_market_price), hundreds)
+plt.plot(range(size_market_price), oneandhalf)
 plt.plot(range(size_market_price), twohundreds)
+plt.plot(range(size_market_price), halfnegative)
 plt.plot(range(size_market_price), hundreds_negatives)
+plt.plot(range(size_market_price), oneandhalfnegative)
 plt.plot(range(size_market_price), twohundreds_negatives)
 
 plt.legend()
