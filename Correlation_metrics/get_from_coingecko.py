@@ -14,6 +14,7 @@ AND INSERT IN SQLITE DATABASE
 
 # CHOOSE THE CRYPTO TO COMPARE
 
+print('')
 crypto_1 = input('Choose the first crypto: ')
 crypto_2 = input('Choose the second crypto: ')
 crypto_id_1 = input('Insert the API id of firt crypto: ')
@@ -176,7 +177,7 @@ if update == 'yes':
     print('-- DELETED COMPLETE --')
 
 print('')
-print('-- START CREATING TABLES AND INSERT VALUES --')
+print('START CREATING TABLES AND INSERT VALUES --')
 
 cur.execute(
     '''CREATE TABLE IF NOT EXISTS {} (
@@ -205,7 +206,7 @@ for i in range(len(crypto_1_list)):
     )
     conn.commit()
 
-print('-- TABLE 1 -> INSERT COMPLETE --')
+print('-- TABLE 1 -> INSERT COMPLETE')
 
 var_2 = list()
 date_2 = list()
@@ -222,7 +223,10 @@ for i in range(len(crypto_2_list)):
     )
     conn.commit()
 
-print('-- TABLE 2 -> INSERT COMPLETE --')
+print('-- TABLE 2 -> INSERT COMPLETE ')
+print('')
+
+print('-- ITS COMPLETE --')
 
 
 
