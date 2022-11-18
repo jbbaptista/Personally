@@ -43,7 +43,7 @@ if size_of_list < 3:
     print('Probably the id is wrong')
     print('Open this link to find the correct id: https://api.coingecko.com/api/v3/coins/list')
     print('')
-    crypto_1 = input('Choose the crypto name: ')
+    crypto_1 = input('Choose the crypto name 1: ')
     headers_1 = {
         'id': crypto_id_1,
         'vs_currency': 'usd',
@@ -77,7 +77,7 @@ if size_of_list < 3:
     print('Probably the id is wrong')
     print('Open this link to find the correct id: https://api.coingecko.com/api/v3/coins/list')
     print('')
-    crypto_2 = input('Choose the crypto name: ')
+    crypto_2 = input('Choose the crypto name 2: ')
     headers_2 = {
         'id': crypto_id_2,
         'vs_currency': 'usd',

@@ -44,6 +44,7 @@ else:
 
 data1 = list()
 data2 = list()
+data_time = list()
 
 # CLEAN LAST VALUES FOR CORRELATION TABLE
 
@@ -68,6 +69,7 @@ for i in range(len(info1)):
             # INSERT IN LIST
 
             data1.append(get_v_1)
+            data_time.append(time1)
             data2.append(get_v_2)
 
             # CREATE NEW TABLE WITH 2 ASSETS
@@ -112,10 +114,12 @@ print('Covariance: ', covariance)
 # Pearson model
 corr1, _ = pearsonr(data1,data2)
 print('Pearsons correlation: %.3f' % corr1)
+print('p-value: ', pearsonr(data1,data2)[1])
 
 # Spearman model
 corr2, _ = spearmanr(data1, data2)
 print('Spearmans correlation: %.3f' % corr2)
+print('p-value: ', spearmanr(data1, data2)[1])
 
 # USE SEABORN
 
@@ -155,10 +159,12 @@ corr_p_90 = list()
 corr_s_30 = list()
 corr_s_60 = list()
 corr_s_90 = list()
+time_l = list()
 for i in range(len(data1)):
 
     v1 = data1[i]
     v2 = data2[i]
+    time = data_time[i]
 
     # ADD VALUES TO THE LISTS
 
@@ -183,14 +189,13 @@ for i in range(len(data1)):
         # GET CORRELATION VALUES
 
             # Pearson model
-        corr1, _ = pearsonr(data1_30, data2_30)
+        corr1_30, _ = pearsonr(data1_30, data2_30)
         # print('Pearsons correlation: %.3f' % corr1)
-        corr_p_30.append(corr1)
+
 
             # Spearman model
-        corr2, _ = spearmanr(data1_30, data2_30)
+        corr2_30, _ = spearmanr(data1_30, data2_30)
         # print('Spearmans correlation: %.3f' % corr2)
-        corr_s_30.append(corr2)
 
     if i > 60 - 1:
         data1_60.remove(data1_60[0])
@@ -199,14 +204,12 @@ for i in range(len(data1)):
         # GET CORRELATION VALUES
 
             # Pearson model
-        corr1, _ = pearsonr(data1_60, data2_60)
+        corr1_60, _ = pearsonr(data1_60, data2_60)
         # print('Pearsons correlation: %.3f' % corr1)
-        corr_p_60.append(corr1)
 
             # Spearman model
-        corr2, _ = spearmanr(data1_60, data2_60)
+        corr2_60, _ = spearmanr(data1_60, data2_60)
         # print('Spearmans correlation: %.3f' % corr2)
-        corr_s_60.append(corr2)
 
     if i > 90 - 1:
         data1_90.remove(data1_90[0])
@@ -215,14 +218,23 @@ for i in range(len(data1)):
         # GET CORRELATION VALUES
 
             # Pearson model
-        corr1, _ = pearsonr(data1_90, data2_90)
+        corr1_90, _ = pearsonr(data1_90, data2_90)
         # print('Pearsons correlation: %.3f' % corr1)
-        corr_p_90.append(corr1)
 
             # Spearman model
-        corr2, _ = spearmanr(data1_90, data2_90)
+        corr2_90, _ = spearmanr(data1_90, data2_90)
         # print('Spearmans correlation: %.3f' % corr2)
-        corr_s_90.append(corr2)
+
+        # INSERT VALUES IN LIST
+
+        corr_p_30.append(corr1_30)
+        corr_s_30.append(corr2_30)
+        corr_p_60.append(corr1_60)
+        corr_s_60.append(corr2_60)
+        corr_p_90.append(corr1_90)
+        corr_s_90.append(corr2_90)
+
+        time_l.append(time)
 
 print('DONE --')
 print('')
@@ -234,26 +246,32 @@ print('')
 
 if t == 'yes':
     print('PEARSON R VALUES --')
-    pyplot.plot(corr_p_30)
-    pyplot.plot(corr_p_60)
-    pyplot.plot(corr_p_90)
+    print('')
+    print('Corr w/ 30 Days: ', round(corr_p_30[-1], 3))
+    print('Corr w/ 60 Days: ', round(corr_p_60[-1], 3))
+    print('Corr w/ 90 Days: ', round(corr_p_90[-1], 3))
+    print('')
+    pyplot.plot(time_l, corr_p_30)
+    pyplot.plot(time_l, corr_p_60)
+    pyplot.plot(time_l, corr_p_90)
+    pyplot.ylabel('Date')
     pyplot.ylabel('Correlation Pearson values')
     pyplot.legend(['corr w/ 30', 'corr w/ 60', 'corr w/ 90'], loc = 'lower right')
     pyplot.show()
 
     print('SPEARMANS VALUES --')
-    pyplot.plot(corr_s_30)
-    pyplot.plot(corr_s_60)
-    pyplot.plot(corr_s_90)
+    print('')
+    print('Corr w/ 30 Days: ', round(corr_s_30[-1], 3))
+    print('Corr w/ 60 Days: ', round(corr_s_60[-1], 3))
+    print('Corr w/ 90 Days: ', round(corr_s_90[-1], 3))
+    print('')
+    pyplot.plot(time_l, corr_s_30)
+    pyplot.plot(time_l, corr_s_60)
+    pyplot.plot(time_l, corr_s_90)
+    pyplot.xlabel('Date')
     pyplot.ylabel('Correlation Spearmans values')
     pyplot.legend(['corr w/ 30', 'corr w/ 60', 'corr w/ 90'], loc = 'lower right')
     pyplot.show()
-
-
-
-
-
-
 
 print('-- ITS COMPLETE --')
 

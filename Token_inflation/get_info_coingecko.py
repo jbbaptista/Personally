@@ -180,6 +180,29 @@ for i in range(len(cs_list)):
 inflation_list_avg = [np.average(inflation_list)]*len(inflation_list)
 inflation_list_avg_1 = [np.average(inflation_list_1)]*len(inflation_list_1)
 
+# WRITE SOME VALUES
+
+print('')
+print('-- SOME VALUES ABOUT INFLATION --')
+print('')
+print('Avg of inflation per month: ', round(np.average(inflation_list) * 100, 3), '%')
+print('Avg of inflation per week: ', round(np.average(inflation_list_1) * 100, 3), '%')
+print('')
+print('Median of inflation per month: ', round(np.median(inflation_list) * 100, 3), '%')
+print('Median of inflation per week: ', round(np.median(inflation_list_1) * 100, 3), '%')
+print('')
+print('INFO ABOUT QUANTILES - monthly')
+print(' - Q1: ', round(np.quantile(inflation_list,0.25) * 100, 3), '%')
+print(' - Q3: ', round(np.quantile(inflation_list,0.75) * 100, 3), '%')
+print('')
+print('INFO ABOUT QUANTILES - weekly')
+print(' - Q1: ', round(np.quantile(inflation_list_1,0.25) * 100, 3), '%')
+print(' - Q3: ', round(np.quantile(inflation_list_1,0.75) * 100, 3), '%')
+print('')
+print('-- Lets see the graphs')
+print('')
+
+
 # CREATE GRAPH
 
 plt.subplot(2,2,1)
@@ -210,3 +233,4 @@ plt.title('Sum Inflation per month for token')
 
 plt.show()
 
+print('DONE --')
