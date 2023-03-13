@@ -2,9 +2,11 @@ from binance.client import Client
 import datetime
 import pprint
 import sqlite3
+import accounts
 
-SecretKey = 'QJ74SfHzhFCC9SPz8a83QpGPwPqPDNrXXc7t2xCXR8C6K6R61qgWQ3pFijk0o1FZ'
-APIKey = '3zodEKkjafb9PcipeouHvaYUSO2uJiPga5b6dz1E45GyZ4MUyXnwTuSof416YcDU'
+SecretKey = accounts.SecretKey
+APIKey = accounts.APIKey
+
 client = Client(APIKey, SecretKey, {"timeout": 40})
 
 symbol = input('Choose your crypto (BTCUSDT): ')

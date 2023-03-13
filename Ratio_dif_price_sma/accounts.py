@@ -1,0 +1,7 @@
+
+
+# KEYS
+
+SecretKey = 'QJ74SfHzhFCC9SPz8a83QpGPwPqPDNrXXc7t2xCXR8C6K6R61qgWQ3pFijk0o1FZ'
+APIKey = '3zodEKkjafb9PcipeouHvaYUSO2uJiPga5b6dz1E45GyZ4MUyXnwTuSof416YcDU'
+

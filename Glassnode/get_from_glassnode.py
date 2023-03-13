@@ -3,6 +3,7 @@ import pprint
 import json
 import datetime
 from matplotlib import pyplot
+import Account
 
 
 
@@ -20,8 +21,7 @@ crypto = input('Choose the crypto name: ')
 
 # GET DATA FROM GLASSNODE
 
-api_key = '2GUWjxiJ00vLZE8n2NIW4upudRM'
-
+api_key = Account.api_key
 
 # TOTAL ADDRESSES
 
