@@ -1,5 +1,4 @@
 
 
-
-n = range(len(100), 1)
-print(n)
+a = range(1, 100)
+print(a)

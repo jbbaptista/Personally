@@ -176,6 +176,7 @@ for i in ratio_l:
     elif float(i) < min1:
         min1 = float(i)
 print('ATL Volume/MarketCap ratio: ', min1)
+print('Last value for Volume/MarketCap ratio (avg): ', round(avg_l[-1], 3))
 
 # ANALISE DE QUARTIS
 
@@ -260,7 +261,7 @@ if a == 'yes':
         plt.title('Quartiles Distribution')
         plt.show()
 
-    aa = input('Do you wanna see the volume chart alone (yes/no): ')
+    aa = input('Do you wanna see the volume chart alone (yes/no/yes with marketcap): ')
     if aa == 'yes':
         aa1 = input('Type of chart (log/linear): ')
         if aa1 == 'log':
@@ -283,6 +284,17 @@ if a == 'yes':
 
         plt.boxplot(volume_l)
         plt.title('Quartiles Distribution')
+        plt.show()
+    if aa == 'yes with marketcap':
+        plt.subplot(2,1,1)
+        plt.bar(date_volume_l, volume_l)
+        plt.ylabel('Volume')
+
+        plt.subplot(2,1,2)
+        plt.plot(date_market_cap_l, market_cap_l)
+        plt.xlabel('Date')
+        plt.ylabel('MarketCap')
+
         plt.show()
     aaa = input('Do you wanna see the market cap chart alone (yes/no): ')
     if aaa == 'yes':

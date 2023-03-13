@@ -38,6 +38,12 @@ if b == 0:
     print('-- DOESNT FIND THE SLUG IN DEFILLAMA -> PROBABLY THE TOKEN DOESNT EXIST --')
     print('YOU CAN CHECK IN http://api.llama.fi/protocols ')
     print('')
+
+a = input('Do you wanna try directly with slug (yes/no): ')
+if a == 'yes':
+    crypto_name = input('Slug: ')
+else:
+    print('-- THE TOKEN ARE NOT ON DEFILLAMA ')
     exit()
 
 print('')

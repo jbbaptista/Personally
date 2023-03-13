@@ -4,6 +4,7 @@ from matplotlib import pyplot
 from scipy.stats import pearsonr, spearmanr
 import seaborn as sns
 import pandas as pd
+import pprint
 
 '''
 
@@ -22,6 +23,9 @@ cur = conn.cursor()
 print('')
 table1 = input('Insert name of table1: ')
 table2 = input('Insert name of table2: ')
+a1 = input('Do you want to measure the beta value (yes/no): ')
+if a1 == 'yes':
+    market_table = input('what is the table as market_returns (data1/data2): ')
 
 # Take values from database
 
@@ -108,8 +112,23 @@ else:
 print('')
 print('-- STATISTICS VALUES --')
 print('')
-covariance = numpy.cov(data1, data2)
-print('Covariance: ', covariance)
+
+covariance = numpy.cov(data1, data2)[0][1]
+print('Covariance: ', round(covariance,5))
+
+if a1 == 'yes':
+    if market_table == 'data1':
+        variance = numpy.var(data1)
+        print('Market variance: ', round(variance,5))
+        print('')
+    elif market_table == 'data2':
+        variance = numpy.var(data2)
+        print('Market variance: ', round(variance,5))
+        print('')
+
+    beta = covariance / variance
+    print('Beta: ', round(beta,5))
+    print('')
 
 # Pearson model
 corr1, _ = pearsonr(data1,data2)
@@ -247,31 +266,35 @@ print('')
 if t == 'yes':
     print('PEARSON R VALUES --')
     print('')
-    print('Corr w/ 30 Days: ', round(corr_p_30[-1], 3))
-    print('Corr w/ 60 Days: ', round(corr_p_60[-1], 3))
-    print('Corr w/ 90 Days: ', round(corr_p_90[-1], 3))
+    print('Corr w/ 30 Values: ', round(corr_p_30[-1], 3))
+    print('Corr w/ 60 Values: ', round(corr_p_60[-1], 3))
+    print('Corr w/ 90 Values: ', round(corr_p_90[-1], 3))
     print('')
-    pyplot.plot(time_l, corr_p_30)
-    pyplot.plot(time_l, corr_p_60)
-    pyplot.plot(time_l, corr_p_90)
-    pyplot.ylabel('Date')
-    pyplot.ylabel('Correlation Pearson values')
-    pyplot.legend(['corr w/ 30', 'corr w/ 60', 'corr w/ 90'], loc = 'lower right')
-    pyplot.show()
+    a1 = input('Chart (yes/no): ')
+    if a1 == 'yes':
+        pyplot.plot(time_l, corr_p_30)
+        pyplot.plot(time_l, corr_p_60)
+        pyplot.plot(time_l, corr_p_90)
+        pyplot.ylabel('Date')
+        pyplot.ylabel('Correlation Pearson values')
+        pyplot.legend(['corr w/ 30', 'corr w/ 60', 'corr w/ 90'], loc = 'lower right')
+        pyplot.show()
 
     print('SPEARMANS VALUES --')
     print('')
-    print('Corr w/ 30 Days: ', round(corr_s_30[-1], 3))
-    print('Corr w/ 60 Days: ', round(corr_s_60[-1], 3))
-    print('Corr w/ 90 Days: ', round(corr_s_90[-1], 3))
+    print('Corr w/ 30 Values: ', round(corr_s_30[-1], 3))
+    print('Corr w/ 60 Values: ', round(corr_s_60[-1], 3))
+    print('Corr w/ 90 Values: ', round(corr_s_90[-1], 3))
     print('')
-    pyplot.plot(time_l, corr_s_30)
-    pyplot.plot(time_l, corr_s_60)
-    pyplot.plot(time_l, corr_s_90)
-    pyplot.xlabel('Date')
-    pyplot.ylabel('Correlation Spearmans values')
-    pyplot.legend(['corr w/ 30', 'corr w/ 60', 'corr w/ 90'], loc = 'lower right')
-    pyplot.show()
+    a2 = input('Chart (yes/no): ')
+    if a2 == 'yes':
+        pyplot.plot(time_l, corr_s_30)
+        pyplot.plot(time_l, corr_s_60)
+        pyplot.plot(time_l, corr_s_90)
+        pyplot.xlabel('Date')
+        pyplot.ylabel('Correlation Spearmans values')
+        pyplot.legend(['corr w/ 30', 'corr w/ 60', 'corr w/ 90'], loc = 'lower right')
+        pyplot.show()
 
 print('-- ITS COMPLETE --')
 

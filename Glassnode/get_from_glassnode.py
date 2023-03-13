@@ -272,6 +272,10 @@ print('')
 month_numb_l = list()
 month_perc_l = list()
 count = 0
+sum_v = 0
+avg_l = list()
+sum_v_numb = 0
+avg_l_numb = list()
 for i in range(len(total_addresses_l)):
     v = float(total_addresses_l[i])
     count += 1
@@ -280,20 +284,42 @@ for i in range(len(total_addresses_l)):
         v1 = float(total_addresses_l[i - 29])
         month_v_perc = (v/v1 - 1) * 100
         month_v_numb = v - v1
+        sum_v += month_v_perc
+        avg_v = round(sum_v / (len(month_perc_l) + 1), 3)
+        sum_v_numb += month_v_numb
+        avg_v_numb = round(sum_v_numb / (len(month_numb_l) + 1), 3)
 
         month_perc_l.append(month_v_perc)
         month_numb_l.append(month_v_numb)
+        avg_l.append(avg_v)
+        avg_l_numb.append(avg_v_numb)
 
+sum_6_months_numb = 0
+sum_6_months_perc = 0
+for i in range(5):
+    v_numb = month_numb_l[-(i+1)]
+    v_perc = month_perc_l[-(i+1)]
+
+    sum_6_months_numb += v_numb
+    sum_6_months_perc += v_perc
+
+    avg_6_numb = round(sum_6_months_numb / (i+1), 3)
+    avg_6_perc = round(sum_6_months_perc / (i+1), 3)
 
 print('Last 6 months Evolutions')
 print('')
-print('Last month - Number evolution: ', month_numb_l[-1], ' | Monthly perc: ', round(month_perc_l[-1],3), '%')
-print('Month before - Number evolution: ', month_numb_l[-2], ' | Monthly perc: ', round(month_perc_l[-2],3), '%')
-print('Month before - Number evolution: ', month_numb_l[-3], ' | Monthly perc: ', round(month_perc_l[-3],3), '%')
-print('Month before - Number evolution: ', month_numb_l[-4], ' | Monthly perc: ', round(month_perc_l[-4],3), '%')
-print('Month before - Number evolution: ', month_numb_l[-5], ' | Monthly perc: ', round(month_perc_l[-5],3), '%')
-print('Month before - Number evolution: ', month_numb_l[-6], ' | Monthly perc: ', round(month_perc_l[-6],3), '%')
+print('Last month - Number evolution: {0:12,.3f}'.format(month_numb_l[-1]), ' | Monthly perc: ', round(month_perc_l[-1], 3), '%')
+print('Month before - Number evolution: {0:12,.3f}'.format(month_numb_l[-2]), ' | Monthly perc: ', round(month_perc_l[-2], 3), '%')
+print('Month before - Number evolution: {0:12,.3f}'.format(month_numb_l[-3]), ' | Monthly perc: ', round(month_perc_l[-3], 3), '%')
+print('Month before - Number evolution: {0:12,.3f}'.format(month_numb_l[-4]), ' | Monthly perc: ', round(month_perc_l[-4], 3), '%')
+print('Month before - Number evolution: {0:12,.3f}'.format(month_numb_l[-5]), ' | Monthly perc: ', round(month_perc_l[-5], 3), '%')
+print('Month before - Number evolution: {0:12,.3f}'.format(month_numb_l[-6]), ' | Monthly perc: ', round(month_perc_l[-6], 3), '%')
 print('')
+print('Monthly growth avg - Number avg: {0:12,.3f}'.format(avg_6_numb), ' | Perc avg: ', avg_6_perc, '%')
+print('')
+print('All time growth avg per Month - Number avg: {0:12,.3f}'.format(avg_l_numb[-1]), ' | Perc avg : ', avg_l[-1], '%')
+print('')
+
 
 
 # CHART
@@ -307,14 +333,16 @@ if a == 'yes':
 
     pyplot.subplot(1,2,1)
     pyplot.bar(aaaa, month_numb_l)
+    pyplot.plot(aaaa, avg_l_numb)
     pyplot.xlabel('Monthly count')
     pyplot.ylabel('Monthly growth by number')
     pyplot.title(crypto)
 
     pyplot.subplot(1,2,2)
     pyplot.bar(aaaa, month_perc_l)
+    pyplot.plot(aaaa, avg_l)
     pyplot.xlabel('Monthly count')
-    pyplot.ylabel('Monthly growth in percentage')
+    pyplot.ylabel('% Monthly growth in percentage')
     pyplot.title(crypto)
 
     pyplot.show()
@@ -328,23 +356,42 @@ if a == 'yes':
             del month_numb_l[0]
             del month_perc_l[0]
 
+        sum_new_numb = 0
+        sum_new_perc = 0
+        avg_new_numb_l = list()
+        avg_new_perc_l = list()
+        for a in range(len(month_numb_l)):
+            v_numb = month_numb_l[-(a+1)]
+            v_perc = month_perc_l[-(a+1)]
+
+            sum_new_numb += float(v_numb)
+            sum_new_perc += float(v_perc)
+
+            avg_new_numb = round(sum_new_numb / (a + 1), 3)
+            avg_new_perc = round(sum_new_perc / (a + 1), 3)
+
+            # INSERT LIST
+
+            avg_new_numb_l.append(avg_new_numb)
+            avg_new_perc_l.append(avg_new_perc)
+
         aaaa = list(range(0, len(month_numb_l)))
 
         pyplot.subplot(1, 2, 1)
         pyplot.bar(aaaa, month_numb_l)
+        pyplot.plot(aaaa, avg_new_numb_l)
         pyplot.xlabel('Monthly count')
         pyplot.ylabel('Monthly growth by number')
         pyplot.title(crypto)
 
         pyplot.subplot(1, 2, 2)
         pyplot.bar(aaaa, month_perc_l)
+        pyplot.plot(aaaa, avg_new_perc_l)
         pyplot.xlabel('Monthly count')
-        pyplot.ylabel('Monthly growth in percentage')
+        pyplot.ylabel('% Monthly growth in percentage')
         pyplot.title(crypto)
 
         pyplot.show()
-
-
 
 
 '''
@@ -357,6 +404,8 @@ print('')
 
 perc_new_total_l = list()
 date_perc_new_total_l = list()
+sum_perc_new_total = 0
+avg_perc_new_total_l = list()
 for i in range(len(new_addresses_l)):
     d1 = date_new_addresses_l[i]
     v1 = new_addresses_l[i]
@@ -373,11 +422,14 @@ for i in range(len(new_addresses_l)):
         # MAKE SOME MATH
 
         perc_new_total = float(v1) / float(v2) * 100
+        sum_perc_new_total += perc_new_total
+        avg_v_perc_new_total = round(sum_perc_new_total / (len(perc_new_total_l) + 1), 3)
 
         # INSERT LIST
 
         perc_new_total_l.append(perc_new_total)
         date_perc_new_total_l.append(d1)
+        avg_perc_new_total_l.append(avg_v_perc_new_total)
 
 
     except:
@@ -401,6 +453,7 @@ print('')
 b = input('Indicator chart (yes/no): ')
 if b == 'yes':
     pyplot.plot(date_perc_new_total_l, perc_new_total_l)
+    pyplot.plot(date_perc_new_total_l, avg_perc_new_total_l)
     pyplot.xlabel('Date')
     pyplot.ylabel('% New Addresses / Total Addresses')
     pyplot.title(crypto)
@@ -438,8 +491,12 @@ if b == 'yes':
         del avg_7_non_zero_addresses[0]
 
     aa = 0
+    avg_aa_l = list()
     for i in range(len(perc_new_total_l)):
         aa += perc_new_total_l[i]
+
+        avg_v_aa = round(aa / (i + 1), 3)
+        avg_aa_l.append(avg_v_aa)
 
     avg_aa = aa / len(perc_new_total_l)
 
@@ -483,6 +540,11 @@ if b == 'yes':
     except:
         print('Non-Zero Addresses: ?')
     print('')
+    print('Total Addresses [Start]: {0:12,.3f}'.format(total_addresses_l[0]))
+    print('Total Addresses [Finish]: {0:12,.3f}'.format(total_addresses_l[-1]))
+    print('Total growth in all period (%): ', round((float(total_addresses_l[-1]) / float(total_addresses_l[0]) - 1) * 100, 3), '%')
+    print('Total growth in all period (number): {0:12,.3f}'.format(float(total_addresses_l[-1]) - float(total_addresses_l[0])))
+    print('')
 
     j = input('Chart (yes/no): ')
     if j == 'yes':
@@ -518,9 +580,11 @@ if b == 'yes':
         pyplot.show()
 
         pyplot.plot(date_perc_new_total_l, perc_new_total_l)
+        pyplot.plot(date_perc_new_total_l, avg_aa_l)
         pyplot.xlabel('Date')
         pyplot.ylabel('% New Addresses / Total Addresses')
         pyplot.title(crypto)
+
         pyplot.show()
 
 print('')

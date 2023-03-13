@@ -16,7 +16,11 @@ print('')
 # CHOOSE THE CRYPTO YOU WANT
 
 crypto = input('Choose the crypto name: ')
+interval = input('Choose the interval (daily/hourly): ')
+if interval == 'hourly':
+    print('(Choose days < 90)')
 n_days = input('How many days (number or max): ')
+
 
 # CREATE THE REQUEST
 
@@ -26,7 +30,7 @@ headers_1 = {
     'id': crypto,
     'vs_currency' : 'usd',
     'days': n_days,
-    'interval': 'daily'
+    'interval': interval
 }
 
 url_1 = 'https://api.coingecko.com/api/v3/coins/' + headers_1['id'] + '/market_chart?' + 'vs_currency=' + headers_1['vs_currency'] +'&days=' + headers_1['days'] + '&interval=' + headers_1['interval']
@@ -48,6 +52,13 @@ print('-- MACRO VALUES --')
 print('')
 market_cap = float(response_2['market_data']['market_cap']['usd'])
 print('Market cap: {0:12,.3f}'.format(market_cap))
+ath_market_cap = 0
+for i in range(len(response_1['market_caps'])):
+    a = float(response_1['market_caps'][i][1])
+    if a > ath_market_cap:
+        ath_market_cap = a
+print('ATH Market Cap: {0:12,.3f}'.format(ath_market_cap))
+print('')
 circ_supply = float(response_2['market_data']['circulating_supply'])
 print('Circulation supply: {0:12,.3f}'.format(circ_supply))
 total_supply = float(response_2['market_data']['total_supply'])
@@ -60,13 +71,13 @@ except:
 
 try:
     perc_burning = ( float(max_supply) - float(total_supply) ) / float(max_supply) * 100
-    print('Percentage of burning: ', perc_burning, '%')
+    print('Percentage of burning: {0:12,.3f}'.format(perc_burning), '%')
 except:
     print('Percentage of burning: ?')
 
 try:
     perc_outside_tokes = (circ_supply / total_supply) * 100
-    print('Percentage of outside tokens: ', perc_outside_tokes, '%')
+    print('Percentage of outside tokens: {0:12,.3f}'.format(perc_outside_tokes), '%')
 except:
     print('Percentage of oustide tokens: ?')
 
@@ -95,7 +106,7 @@ for i in range(len(response_1['prices'])):
 
     # FILTER THE DATE
 
-    date = str(datetime.datetime.fromtimestamp(date_value / 1000)).split(' ')[0]
+    date = str(datetime.datetime.fromtimestamp(date_value / 1000)).split(' ')[0] + ' ' + str(datetime.datetime.fromtimestamp(date_value / 1000)).split(' ')[1].split(':')[0] + 'h'
 
     # INSERT VALUES IN LISTS
 

@@ -19,7 +19,8 @@ crypto_1 = input('Choose the first crypto: ')
 crypto_2 = input('Choose the second crypto: ')
 crypto_id_1 = input('Insert the API id of firt crypto: ')
 crypto_id_2 = input('Insert the API id of second crypto: ')
-n_days = input('How many days do you want (n, max): ')
+n_days = input('How many days do you want, for h values choose <90 days (n, max): ')
+interval_v = input('What data interval (daily/hourly/4hours): ')
 
 # GET THE HISTORICAL VALUES OF THE PRICE
 
@@ -29,7 +30,7 @@ headers_1 = {
     'id' : crypto_id_1,
     'vs_currency' : 'usd',
     'days' : n_days,
-    'interval' : 'daily'
+    'interval' : interval_v
 }
 
 url = 'https://api.coingecko.com/api/v3/coins/' + headers_1['id'] + '/market_chart?' + 'vs_currency=' + headers_1['vs_currency'] +'&days=' + headers_1['days'] + '&interval=' + headers_1['interval']
@@ -48,7 +49,7 @@ if size_of_list < 3:
         'id': crypto_id_1,
         'vs_currency': 'usd',
         'days': n_days,
-        'interval': 'daily'
+        'interval': interval_v
     }
 
     url = 'https://api.coingecko.com/api/v3/coins/' + headers_1['id'] + '/market_chart?' + 'vs_currency=' + \
@@ -63,7 +64,7 @@ headers_2 = {
     'id' : crypto_id_2,
     'vs_currency' : 'usd',
     'days' : n_days,
-    'interval' : 'daily'
+    'interval' : interval_v
 }
 
 url = 'https://api.coingecko.com/api/v3/coins/' + headers_2['id'] + '/market_chart?' + 'vs_currency=' + headers_2['vs_currency'] +'&days=' + headers_2['days'] + '&interval=' + headers_2['interval']
@@ -82,7 +83,7 @@ if size_of_list < 3:
         'id': crypto_id_2,
         'vs_currency': 'usd',
         'days': n_days,
-        'interval': 'daily'
+        'interval': interval_v
     }
 
     url = 'https://api.coingecko.com/api/v3/coins/' + headers_2['id'] + '/market_chart?' + 'vs_currency=' + \
@@ -99,9 +100,12 @@ size_2 = len(response_2['prices'])
 crypto_1_list = list()
 crypto_2_list = list()
 
-    # FIRST CRYPTO
-
+# FIRST CRYPTO
+count1 = 0
+startprice = response_1['prices'][0][1]
 for i in range(size_1):
+    count1 += 1
+
     # GET VALUES
 
     date_value = response_1['prices'][i][0]
@@ -114,23 +118,45 @@ for i in range(size_1):
 
     # FILTER DATE
 
-    date = str(datetime.datetime.fromtimestamp(date_value / 1000)).split(' ')[0]
+    if interval_v == 'hourly' or interval_v == '4hours':
+        date = str(datetime.datetime.fromtimestamp(date_value / 1000)).split(' ')[0] + ' ' + str(datetime.datetime.fromtimestamp(date_value / 1000)).split(' ')[1].split(':')[0] + 'h'
+    else:
+        date = str(datetime.datetime.fromtimestamp(date_value / 1000)).split(' ')[0]
 
     # CREATE VAR. IN PRICE VALUE
 
-    if i >1 :
+    if i > 1 and interval_v != '4hours':
         var = price / (response_1['prices'][i-1][1]) - 1
-    else:
+
+        # INSERT INTO LIST
+
+        final_value = (date, price, var)
+        crypto_1_list.append(final_value)
+
+    elif count1 == 4 and interval_v == '4hours':
+        var = price / startprice - 1
+        count1 = 0
+        startprice = price
+        # INSERT INTO LIST
+
+        final_value = (date, price, var)
+        crypto_1_list.append(final_value)
+
+    elif i == 0:
+
         var = 0
+        # INSERT INTO LIST
 
-    # INSERT INTO LIST
+        final_value = (date, price, var)
+        crypto_1_list.append(final_value)
 
-    final_value = (date, price, var)
-    crypto_1_list.append(final_value)
+# SECOND CRYPTO
 
-    # SECOND CRYPTO
-
+count2 = 0
+startprice2 = response_2['prices'][0][1]
 for i in range(size_2):
+    count2 += 1
+
     # GET VALUES
 
     date_value = response_2['prices'][i][0]
@@ -143,19 +169,38 @@ for i in range(size_2):
 
     # FILTER DATE
 
-    date = str(datetime.datetime.fromtimestamp(date_value / 1000)).split(' ')[0]
+    if interval_v == 'hourly' or interval_v == '4hours':
+        date = str(datetime.datetime.fromtimestamp(date_value / 1000)).split(' ')[0] + ' ' + str(datetime.datetime.fromtimestamp(date_value / 1000)).split(' ')[1].split(':')[0] + 'h'
+    else:
+        date = str(datetime.datetime.fromtimestamp(date_value / 1000)).split(' ')[0]
 
     # CREATE VAR. IN PRICE VALUE
 
-    if i > 1:
+    if i > 1 and interval_v != '4hours':
         var = price / (response_2['prices'][i - 1][1]) - 1
-    else:
+
+        # INSERT INTO LIST
+
+        final_value = (date, price, var)
+        crypto_2_list.append(final_value)
+
+    elif count2 == 4 and interval_v == '4hours':
+        var = price / startprice2 - 1
+        count2 = 0
+        startprice2 = price
+
+        # INSERT INTO LIST
+
+        final_value = (date, price, var)
+        crypto_2_list.append(final_value)
+
+    elif i == 0:
         var = 0
 
-    # INSERT INTO LIST
+        # INSERT INTO LIST
 
-    final_value = (date, price, var)
-    crypto_2_list.append(final_value)
+        final_value = (date, price, var)
+        crypto_2_list.append(final_value)
 
 print('')
 # CREATE DATABASE IN SQL

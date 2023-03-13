@@ -97,7 +97,8 @@ print('')
 
 print('-- START LOOPING TO INDENTIFY OUTLIERS --')
 print('')
-a = input('Do you want to clean the data (yes/no): ')
+a = input('Do you want to clean the outliers (yes/no): ')
+print('')
 if a =='yes':
     print('-- TABLE 1')
     for i in range(len(data1)):
@@ -134,7 +135,48 @@ if a =='yes':
 
     print('TABLE 2 -- CLEANING DONE')
     print('')
-    
+
+a1 = input('Do you wanna clean positive/negative numbers (yes/no): ')
+if a1 == 'yes':
+    print('-- LOOPING TO CLEAR THE DATA')
+    print('')
+    b1 = input('Do you wanna clean positive or negative (positive/negative): ')
+    b2 = input('Do you wanna clean table 1 or 2 (1/2): ')
+    if b2 == '1':
+        c1 = data1
+        c2 = table1
+    else:
+        c1 = data2
+        c2 = table2
+
+    if b1 == 'positive':
+        print('-- CLEANING THE POSITIVE VALUES')
+        for i in range(len(c1)):
+            a = float(c1[i][1])
+
+            if a > 0 :
+                # CLEAN DATA
+                cur.execute(
+                    '''DELETE FROM {}
+                    WHERE price_var = ?'''.format(c2), (a,)
+                )
+                conn.commit()
+
+    elif b1 == 'negative':
+        print('-- CLEANING THE NEGATIVE VALUES')
+        for i in range(len(c1)):
+            a = float(c1[i][1])
+
+            if a < 0:
+                # CLEAN DATA
+                cur.execute(
+                    '''DELETE FROM {}
+                    WHERE price_var = ?'''.format(c2), (a,)
+                )
+                conn.commit()
+
+
+print('')
 print('-- ITS COMPLETE --')
 
 
