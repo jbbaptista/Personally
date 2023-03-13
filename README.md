@@ -1,2 +1,6 @@
 # Personally
-Some confidential stuff
+The way you research the market 
+
+Generate alpha
+
+Be welcome
