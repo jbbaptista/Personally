@@ -38,17 +38,29 @@ print('')
 # GET THE NAME OF THE SECTORES
 
 sector_l = list()
+id_l = list()
 marketcap_l = list()
 data_for_table_l = list()
 market_share_perc_l = list()
 volume_24h_l = list()
 volume_24h_perc_l = list()
 perc_vol_marketcap_l = list()
+market_cap_changes_24h_l = list()
 for i in range(len(response)):
     v = response[i]['name']
-    market_cap = round(float(response[i]['market_cap']), 3)
+    id = response[i]['id']
+
+    try:
+        market_cap = round(float(response[i]['market_cap']), 3)
+        market_cap_changes_24h = round(float(response[i]['market_cap_change_24h']), 3)
+    except:
+        market_cap = 0
+        market_cap_changes_24h = 0
     perc = round(market_cap / total_marketcap * 100, 2)
-    volume_24h = round(float(response[i]['volume_24h']),3)
+    try:
+        volume_24h = round(float(response[i]['volume_24h']), 3)
+    except:
+        volume_24h = 0
     perc_volume = round(volume_24h / total_volume * 100, 2)
     if market_cap != 0:
         perc_vol_marketcap = round(volume_24h / market_cap * 100, 2)
@@ -63,6 +75,8 @@ for i in range(len(response)):
     volume_24h_l.append(volume_24h)
     volume_24h_perc_l.append(perc_volume)
     perc_vol_marketcap_l.append(perc_vol_marketcap)
+    id_l.append(id)
+    market_cap_changes_24h_l.append(market_cap_changes_24h)
 
     # CALCULATIONS
 
@@ -76,7 +90,7 @@ for i in range(len(response)):
     else:
         volume_24h2 = str(round(volume_24h / 1000000000, 3)) + ' B'
 
-    a = (v, marketcap2, perc, volume_24h2, perc_volume, perc_vol_marketcap)
+    a = (v, id, marketcap2, perc, volume_24h2, perc_volume, perc_vol_marketcap, market_cap_changes_24h)
     data_for_table_l.append(a)
 
 # PRINT VALUES IN TABLE
@@ -84,11 +98,14 @@ for i in range(len(response)):
 a = input('You want to see the values in table (yes/no): ')
 if a == 'yes':
     head = ['Sector',
+            'id',
             'MarketCap',
             'MCap-TotMCap %',
             'Volume 24h',
             'Vol-TotVol %',
-            'Vol-MCap %']
+            'Vol-MCap %',
+            'MCap 24h %'
+            ]
     print(tabulate(data_for_table_l, headers=head, tablefmt='grid'))
 
 # CREATE GRAPH TO GET ALL INFO
