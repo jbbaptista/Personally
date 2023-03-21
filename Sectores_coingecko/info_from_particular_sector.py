@@ -131,4 +131,19 @@ if b == 'yes':
     ]
     print(tabulate(data_for_table_l, headers=head, tablefmt='grid'))
 
+q1 = input('Do you wanna order by MCap 24h % (yes/no): ')
+if q1 == 'yes':
+    sorted_list = sorted(data_for_table_l, key=lambda x: x[7])
+    head = [
+        'Nº',
+        'Cryptos',
+        'Ticket',
+        'MarketCap',
+        'Fdv',
+        'Volume 24h',
+        'Vol/MCap %',
+        '24h Changes %'
+    ]
+    print(tabulate(sorted_list, headers=head, tablefmt='grid'))
+
 

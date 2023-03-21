@@ -108,6 +108,20 @@ if a == 'yes':
             ]
     print(tabulate(data_for_table_l, headers=head, tablefmt='grid'))
 
+q1 = input('Do you wanna order by the MCap 24h % (yes/no): ')
+if q1 == 'yes':
+    sorted_list = sorted(data_for_table_l, key=lambda x: x[7])
+    head = ['Sector',
+            'id',
+            'MarketCap',
+            'MCap-TotMCap %',
+            'Volume 24h',
+            'Vol-TotVol %',
+            'Vol-MCap %',
+            'MCap 24h %'
+            ]
+    print(tabulate(sorted_list, headers=head, tablefmt='grid'))
+
 # CREATE GRAPH TO GET ALL INFO
 
 print('')

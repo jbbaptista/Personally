@@ -30,6 +30,8 @@ while a == True:
     l1 = 'B' + str(i + 1)
     next_name = worksheet[l1].value
 
+
+
     # Stop the algo
 
     if next_name == None:
@@ -40,7 +42,7 @@ while a == True:
     Location1 = 'D' + str(i)
     coingecko_api = str(worksheet[Location1].value)
 
-    # GET iportant values to insert
+    # GET important values to insert
 
     url = 'https://api.coingecko.com/api/v3/coins/' + coingecko_api + '?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false'
     try:
@@ -64,7 +66,7 @@ while a == True:
     except:
         tvl = None
 
-    print(crypto_name, '//', coingecko_api, '//', market_cap, 'M //', fdv, 'M //', tvl, 'M')
+    print(crypto_name, '//', market_cap, 'M //', fdv, 'M //', tvl, 'M')
 
     # Update MarketCap value in excel
 
