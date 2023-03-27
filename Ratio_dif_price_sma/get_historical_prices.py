@@ -2,10 +2,10 @@ from binance.client import Client
 import datetime
 import pprint
 import sqlite3
-import accounts
+import secret
 
-SecretKey = accounts.SecretKey
-APIKey = accounts.APIKey
+SecretKey = secret.SecretKey
+APIKey = secret.APIKey
 
 client = Client(APIKey, SecretKey, {"timeout": 40})
 
