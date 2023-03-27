@@ -4,7 +4,7 @@ import time
 from urllib.parse import quote_plus
 import bybit
 import websocket
-import accounts
+import secret
 
 '''
 
@@ -22,8 +22,8 @@ Receber:
 
 ws_url = 'wss://stream.bybit.com/realtime'
 
-api_key = accounts.bybit()['api_key']
-secret_key = accounts.bybit()['secret_key']
+api_key = secret.bybit()['api_key']
+secret_key = secret.bybit()['secret_key']
 
 # Generate expires
 
