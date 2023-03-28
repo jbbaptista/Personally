@@ -179,6 +179,8 @@ corr_s_30 = list()
 corr_s_60 = list()
 corr_s_90 = list()
 time_l = list()
+beta_30_l = list()
+x_l = list()
 for i in range(len(data1)):
 
     v1 = data1[i]
@@ -215,6 +217,19 @@ for i in range(len(data1)):
             # Spearman model
         corr2_30, _ = spearmanr(data1_30, data2_30)
         # print('Spearmans correlation: %.3f' % corr2)
+
+            # Beta value
+
+        cov_30 = numpy.cov(data1_30, data2_30)[0][1]
+        if market_table == 'data1':
+            var_30 = numpy.var(data1_30)
+        elif market_table == 'data2':
+            var_30 = numpy.var(data2_30)
+
+        beta_30 = round(cov_30 / var_30, 5)
+
+        beta_30_l.append(beta_30)
+        x_l.append(time)
 
     if i > 60 - 1:
         data1_60.remove(data1_60[0])
@@ -296,6 +311,14 @@ if t == 'yes':
         pyplot.legend(['corr w/ 30', 'corr w/ 60', 'corr w/ 90'], loc = 'lower right')
         pyplot.show()
 
+a3 = input('Do you wanna see 30days beta chart (yes/no): ')
+if a3 == 'yes':
+    pyplot.plot(x_l, beta_30_l)
+    pyplot.xlabel('Date')
+    pyplot.title('Beta value - 30D values')
+    pyplot.show()
+    
+print('')
 print('-- ITS COMPLETE --')
 
 
