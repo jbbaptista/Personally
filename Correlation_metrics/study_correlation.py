@@ -221,16 +221,17 @@ for i in range(len(data1)):
         # print('Spearmans correlation: %.3f' % corr2)
 
             # Beta value
+        if a1 == 'yes':
+            cov_30 = numpy.cov(data1_30, data2_30)[0][1]
+            if market_table == 'data1':
+                var_30 = numpy.var(data1_30)
+            elif market_table == 'data2':
+                var_30 = numpy.var(data2_30)
 
-        cov_30 = numpy.cov(data1_30, data2_30)[0][1]
-        if market_table == 'data1':
-            var_30 = numpy.var(data1_30)
-        elif market_table == 'data2':
-            var_30 = numpy.var(data2_30)
+            beta_30 = round(cov_30 / var_30, 5)
 
-        beta_30 = round(cov_30 / var_30, 5)
+            beta_30_l.append(beta_30)
 
-        beta_30_l.append(beta_30)
         x_l.append(time)
 
             # Stdev
@@ -295,8 +296,8 @@ if t == 'yes':
     print('Corr w/ 60 Values: ', round(corr_p_60[-1], 3))
     print('Corr w/ 90 Values: ', round(corr_p_90[-1], 3))
     print('')
-    a1 = input('Chart (yes/no): ')
-    if a1 == 'yes':
+    a7 = input('Chart (yes/no): ')
+    if a7 == 'yes':
         pyplot.plot(time_l, corr_p_30)
         pyplot.plot(time_l, corr_p_60)
         pyplot.plot(time_l, corr_p_90)
@@ -311,8 +312,8 @@ if t == 'yes':
     print('Corr w/ 60 Values: ', round(corr_s_60[-1], 3))
     print('Corr w/ 90 Values: ', round(corr_s_90[-1], 3))
     print('')
-    a2 = input('Chart (yes/no): ')
-    if a2 == 'yes':
+    a8 = input('Chart (yes/no): ')
+    if a8 == 'yes':
         pyplot.plot(time_l, corr_s_30)
         pyplot.plot(time_l, corr_s_60)
         pyplot.plot(time_l, corr_s_90)
@@ -321,14 +322,22 @@ if t == 'yes':
         pyplot.legend(['corr w/ 30', 'corr w/ 60', 'corr w/ 90'], loc = 'lower right')
         pyplot.show()
 
-a3 = input('Do you wanna see 30days beta chart (yes/no): ')
-if a3 == 'yes':
-    pyplot.plot(x_l, beta_30_l)
-    pyplot.xlabel('Date')
-    pyplot.title('Beta value - 30D values')
-    pyplot.show()
+if a1 == 'yes':
+    a3 = input('Do you wanna see 30days beta chart (yes/no): ')
+    print('')
+    print('Beta - Last 30D value: ', str(round(float(beta_30_l[-1]), 3)))
+    print('')
+    if a3 == 'yes':
+        pyplot.plot(x_l, beta_30_l)
+        pyplot.xlabel('Date')
+        pyplot.title('Beta value - 30D values')
+        pyplot.show()
 
 a4 = input('Do you wanna see 30days stdev chart (yes/no): ')
+print('')
+print('Stdev - Last 30D value (Data1): ', str(round(float(stdev1_30_l[-1]), 3)))
+print('Stdev - Last 30D value (Data2): ', str(round(float(stdev2_30_l[-1]), 3)))
+print('')
 if a4 == 'yes':
     pyplot.plot(x_l, stdev1_30_l, label='Stdev of ' + table1)
     pyplot.plot(x_l, stdev2_30_l, label='Stdev of ' + table2)
@@ -337,7 +346,6 @@ if a4 == 'yes':
     pyplot.legend(loc='lower right')
     pyplot.show()
 
-print('')
 print('-- ITS COMPLETE --')
 
 
