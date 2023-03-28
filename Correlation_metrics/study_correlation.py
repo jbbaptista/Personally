@@ -180,6 +180,8 @@ corr_s_60 = list()
 corr_s_90 = list()
 time_l = list()
 beta_30_l = list()
+stdev1_30_l = list()
+stdev2_30_l = list()
 x_l = list()
 for i in range(len(data1)):
 
@@ -230,6 +232,14 @@ for i in range(len(data1)):
 
         beta_30_l.append(beta_30)
         x_l.append(time)
+
+            # Stdev
+
+        stdev1_30 = numpy.std(data1_30)
+        stdev2_30 = numpy.std(data2_30)
+
+        stdev1_30_l.append(stdev1_30)
+        stdev2_30_l.append(stdev2_30)
 
     if i > 60 - 1:
         data1_60.remove(data1_60[0])
@@ -317,7 +327,16 @@ if a3 == 'yes':
     pyplot.xlabel('Date')
     pyplot.title('Beta value - 30D values')
     pyplot.show()
-    
+
+a4 = input('Do you wanna see 30days stdev chart (yes/no): ')
+if a4 == 'yes':
+    pyplot.plot(x_l, stdev1_30_l, label='Stdev of ' + table1)
+    pyplot.plot(x_l, stdev2_30_l, label='Stdev of ' + table2)
+    pyplot.xlabel('Date')
+    pyplot.title('Stdev values - 30D values')
+    pyplot.legend(loc='lower right')
+    pyplot.show()
+
 print('')
 print('-- ITS COMPLETE --')
 
