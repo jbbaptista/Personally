@@ -26,7 +26,12 @@ table2 = input('Insert name of table2: ')
 a1 = input('Do you want to measure the beta value (yes/no): ')
 if a1 == 'yes':
     market_table = input('what is the table as market_returns (data1/data2): ')
-
+    if market_table == 'data1':
+        q1 = table2
+        q2 = table1
+    else:
+        q1 = table1
+        q2 = table2
 # Take values from database
 
 cur.execute(
@@ -330,7 +335,7 @@ if a1 == 'yes':
     if a3 == 'yes':
         pyplot.plot(x_l, beta_30_l)
         pyplot.xlabel('Date')
-        pyplot.title('Beta value - 30D values')
+        pyplot.title('Beta value for ' + q1 + ' (vs ' + q2 + ') - 30D values')
         pyplot.show()
 
 a4 = input('Do you wanna see 30days stdev chart (yes/no): ')

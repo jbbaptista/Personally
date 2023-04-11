@@ -46,9 +46,11 @@ volume_24h_l = list()
 volume_24h_perc_l = list()
 perc_vol_marketcap_l = list()
 market_cap_changes_24h_l = list()
+n_l = list()
 for i in range(len(response)):
     v = response[i]['name']
     id = response[i]['id']
+    n = i + 1
 
     try:
         market_cap = round(float(response[i]['market_cap']), 3)
@@ -77,6 +79,7 @@ for i in range(len(response)):
     perc_vol_marketcap_l.append(perc_vol_marketcap)
     id_l.append(id)
     market_cap_changes_24h_l.append(market_cap_changes_24h)
+    n_l.append(n)
 
     # CALCULATIONS
 
@@ -90,14 +93,15 @@ for i in range(len(response)):
     else:
         volume_24h2 = str(round(volume_24h / 1000000000, 3)) + ' B'
 
-    a = (v, id, marketcap2, perc, volume_24h2, perc_volume, perc_vol_marketcap, market_cap_changes_24h)
+    a = (n, v, id, marketcap2, perc, volume_24h2, perc_volume, perc_vol_marketcap, market_cap_changes_24h)
     data_for_table_l.append(a)
 
 # PRINT VALUES IN TABLE
 
 a = input('You want to see the values in table (yes/no): ')
 if a == 'yes':
-    head = ['Sector',
+    head = ['n',
+            'Sector',
             'id',
             'MarketCap',
             'MCap-TotMCap %',
@@ -110,8 +114,9 @@ if a == 'yes':
 
 q1 = input('Do you wanna order by the MCap 24h % (yes/no): ')
 if q1 == 'yes':
-    sorted_list = sorted(data_for_table_l, key=lambda x: x[7])
-    head = ['Sector',
+    sorted_list = sorted(data_for_table_l, key=lambda x: x[8])
+    head = ['n',
+            'Sector',
             'id',
             'MarketCap',
             'MCap-TotMCap %',

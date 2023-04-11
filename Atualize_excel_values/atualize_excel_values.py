@@ -1,6 +1,8 @@
 import openpyxl
 import requests
 import time
+import pprint
+import datetime
 
 '''
 GET INFO FROM EXCEL, 
@@ -20,6 +22,9 @@ worksheet = workbook['Sheet1']
 
 a = True
 i = 5
+days_ago = 30
+current_time = datetime.datetime.now()
+start_date = current_time - datetime.timedelta(days=days_ago)
 while a == True:
     i += 1
 
@@ -45,6 +50,7 @@ while a == True:
     # GET important values to insert
 
     url = 'https://api.coingecko.com/api/v3/coins/' + coingecko_api + '?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false'
+    url2 = f'https://api.coingecko.com/api/v3/coins/{coingecko_api}/market_chart/range?vs_currency=usd&from={start_date.timestamp()}&to={current_time.timestamp()}'
     try:
         r = requests.get(url)
         r.raise_for_status()
@@ -57,7 +63,20 @@ while a == True:
             print('')
             r = requests.get(url)
 
+    try:
+        r2 = requests.get(url2)
+        r2.raise_for_status()
+    except requests.exceptions.HTTPError as error:
+        if error.response.status_code == 429:
+            print('')
+            print('Exceeded rate limit - Waiting 120sec to continue')
+            time.sleep(120)
+            print('-- Continue')
+            print('')
+            r2 = requests.get(url2)
+
     response = r.json()
+    response2 = r2.json()
 
     market_cap = round(float(response['market_data']['market_cap']['usd']) / 1000000, 3)
     fdv = round(float(response['market_data']['total_supply']) * float(response['market_data']['current_price']['usd']) / 1000000, 3)
@@ -66,7 +85,9 @@ while a == True:
     except:
         tvl = None
 
-    print(crypto_name, '//', market_cap, 'M //', fdv, 'M //', tvl, 'M')
+    market_cap_30days = round(float(response2['market_caps'][0][1]) / 1000000, 3)
+
+    print(crypto_name, '//', 'MCap:', market_cap, 'M //', 'MCap 30D:', market_cap_30days, 'M //', 'FDV:', fdv, 'M //', 'TVL:', tvl, 'M')
 
     # Update MarketCap value in excel
 
@@ -78,9 +99,19 @@ while a == True:
     cell.value = market_cap
     cell.number_format = original_format
 
+    # Update the MarketCap 30days value in excel
+
+    cell_market_cap_30days = 'H' + str(i)
+
+    cell = worksheet[cell_market_cap_30days]
+    original_format = cell.number_format
+
+    cell.value = market_cap_30days
+    cell.number_format = original_format
+
     # Update FDV value in excel
 
-    cell_fdv = 'K' + str(i)
+    cell_fdv = 'M' + str(i)
 
     cell = worksheet[cell_fdv]
     original_format = cell.number_format
@@ -91,7 +122,7 @@ while a == True:
     # Update TVL
 
     if tvl != None:
-        cell_tvl = 'T' + str(i)
+        cell_tvl = 'V' + str(i)
 
         cell = worksheet[cell_tvl]
         original_format = cell.number_format
