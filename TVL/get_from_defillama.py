@@ -170,23 +170,45 @@ print('')
 print('-- MARKET CAP INFO -- ')
 print('')
 
-max_marketcap = max(market_cap_list)
-print('ATH for Market cap {0:12,.3f}'.format(max_marketcap))
-actual_marketcap = market_cap_list[-1]
-print('Actual Marketcap: {0:12,.3f}'.format(actual_marketcap))
-perc_down_marketcap = round((float(actual_marketcap) / float(max_marketcap) - 1) * 100, 2)
-print('Perc down from ATH Marketcap: ', perc_down_marketcap, '%')
-ratio_max_marketcap = round(max(r_tvl_marketcap), 3)
+try:
+    max_marketcap = max(market_cap_list)
+    print('ATH for Market cap {0:12,.3f}'.format(max_marketcap))
+except:
+    max_marketcap = 'N/A'
+    print('ATH for Market cap: ', max_marketcap)
 
-print('')
-print('-- TVL / MARKET CAP INFO --')
-print('')
+try:
+    actual_marketcap = market_cap_list[-1]
+    print('Actual Marketcap: {0:12,.3f}'.format(actual_marketcap))
+except:
+    actual_marketcap = 'N/A'
+    print('Actual Marketcap: ', actual_marketcap)
 
-print('ATH ratio for TVL / Marketcap: ', ratio_max_marketcap)
-ratio_actual_marketcap = round(r_tvl_marketcap[-1], 3)
-print('Actual ratio for TVL / Marketcap: ', ratio_actual_marketcap)
-perc_down_ratio = round((ratio_actual_marketcap / ratio_max_marketcap - 1) * 100, 2)
-print('Perc down from ATH ratio: ', perc_down_ratio, '%')
+try:
+    perc_down_marketcap = round((float(actual_marketcap) / float(max_marketcap) - 1) * 100, 2)
+    print('Perc down from ATH Marketcap: ', perc_down_marketcap, '%')
+except:
+    perc_down_marketcap = 'N/A'
+    print('Perc down from ATH Marketcap: ', perc_down_marketcap, '%')
+
+try:
+    ratio_max_marketcap = round(max(r_tvl_marketcap), 3)
+except:
+    ratio_max_marketcap = 'N/A'
+
+if len(r_tvl_marketcap) > 1:
+    print('')
+    print('-- TVL / MARKET CAP INFO --')
+    print('')
+
+    print('ATH ratio for TVL / Marketcap: ', ratio_max_marketcap)
+    ratio_actual_marketcap = round(r_tvl_marketcap[-1], 3)
+    print('Actual ratio for TVL / Marketcap: ', ratio_actual_marketcap)
+    perc_down_ratio = round((ratio_actual_marketcap / ratio_max_marketcap - 1) * 100, 2)
+    print('Perc down from ATH ratio: ', perc_down_ratio, '%')
+else:
+    print('')
+    print('No values of MCap')
 
 '''
 FAZER VARIOS RATIOS COM O MARKET CAP
@@ -207,11 +229,12 @@ if a == 'yes':
     plt.title('TVL historical')
     plt.show()
 
-    plt.plot(date_r, r_tvl_marketcap)
-    plt.xlabel('Date')
-    plt.ylabel('TVL / Marketcap')
-    plt.title('Ratio for TVL / Marketcap historical')
-    plt.show()
+    if len(r_tvl_marketcap) > 1:
+        plt.plot(date_r, r_tvl_marketcap)
+        plt.xlabel('Date')
+        plt.ylabel('TVL / Marketcap')
+        plt.title('Ratio for TVL / Marketcap historical')
+        plt.show()
 
 print('DONE --')
 

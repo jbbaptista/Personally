@@ -1,10 +1,11 @@
 import requests
 from matplotlib import pyplot as plt
 from datetime import datetime
+import secret
 
 # KEY FROM ETHERSCAN
 
-api_key = 'PP723RG78J2GWH23AEYYKG7XNPXPZ5X4QC'
+api_key = secret.api_key
 
 # Get balances
 

@@ -50,11 +50,19 @@ response_2 = r_2.json()
 print('')
 print('-- MACRO VALUES --')
 print('')
-market_cap = float(response_2['market_data']['market_cap']['usd'])
-print('Market cap: {0:12,.3f}'.format(market_cap))
+try:
+    market_cap = float(response_2['market_data']['market_cap']['usd'])
+    print('Market cap: {0:12,.3f}'.format(market_cap))
+except:
+    market_cap = 'N/A'
+    print('Market cap: ', market_cap)
 ath_market_cap = 0
 for i in range(len(response_1['market_caps'])):
-    a = float(response_1['market_caps'][i][1])
+    try:
+        a = float(response_1['market_caps'][i][1])
+    except:
+        if response_1['market_caps'][i][1] == None:
+            continue
     if a > ath_market_cap:
         ath_market_cap = a
 print('ATH Market Cap: {0:12,.3f}'.format(ath_market_cap))
