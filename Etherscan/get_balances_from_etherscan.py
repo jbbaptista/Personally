@@ -5,7 +5,7 @@ import secret
 
 # KEY FROM ETHERSCAN
 
-api_key = secret.api_key
+api_key = secret.api_key_etherscan
 
 # Get balances
 

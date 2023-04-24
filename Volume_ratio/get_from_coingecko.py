@@ -23,7 +23,7 @@ crypto = input('Choose the crypto: ')
 interval = input('Pick the timeline (weekly/daily): ')
 n_days = input('Pick the number of values to look at (number/max): ')
 if interval == 'daily':
-    sma_input = 15
+    sma_input = 14
 if interval == 'weekly':
     sma_input = 4
 
@@ -41,6 +41,19 @@ url = 'https://api.coingecko.com/api/v3/coins/' + headers['id'] + '/market_chart
 r = requests.get(url)
 response = r.json()
 
+# Test if we have the MarketCap available
+
+url1 = f'https://api.coingecko.com/api/v3/coins/{crypto}'
+r1 = requests.get(url1)
+response1 = r1.json()
+
+market_cap_test = response1['market_data']['market_cap']['usd']
+fdv_validator = False
+if market_cap_test == None or market_cap_test == 0:
+    print('\nWe dont have the marketcap value available \n-- Working with FDV \n')
+    fdv_validator = True
+    total_supply = response1['market_data']['total_supply']
+
 # IF SOMETHING GO WRONG
 
 size = len(response)
@@ -53,7 +66,7 @@ if size < 3:
 
 # LOOP STARTS TO GET SOME PRECIOUS DATA
 
-    # WORK FIRST THE MARKET CAP
+# WORK FIRST THE MARKET CAP
 
 
 date_market_cap_l = list()
@@ -63,7 +76,10 @@ for i in range(len(response['market_caps'])):
     # GET THE VALUES
 
     date_v = response['market_caps'][i][0]
-    market_cap_v = response['market_caps'][i][1]
+    if fdv_validator == False:
+        market_cap_v = response['market_caps'][i][1]
+    elif fdv_validator == True:
+        market_cap_v = float(total_supply) * float(response['prices'][i][1])
 
     # PROTECTION
 
@@ -81,7 +97,7 @@ for i in range(len(response['market_caps'])):
     date_market_cap_l.append(date)
     market_cap_l.append(market_cap)
 
-    # WORK SECOND WITH VOLUME
+# WORK SECOND WITH VOLUME
 
 date_volume_l = list()
 volume_l = list()
@@ -138,7 +154,7 @@ for i in range(len(market_cap_l)):
 # GET SMA
 
 avg_l = list()
-n = - 1
+n = -1
 sum = 0
 for i in range(len(ratio_l)):
     sum = sum + ratio_l[i]

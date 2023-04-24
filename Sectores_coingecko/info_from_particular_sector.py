@@ -33,6 +33,7 @@ ticket_l = list()
 fdv_l = list()
 price_24h_changes_l = list()
 
+print('\n-- Start Looping\n')
 for i in range(len(response)):
 
     name = response[i]['name']
@@ -137,7 +138,7 @@ if median_fdv / 1000000 < 1000:
 else:
     median_fdv1 = str(round(median_fdv / 1000000000, 3)) + ' B'
 
-print('')
+print('\n-- GLOBAL INFO --\n')
 print('Avg MarketCap: ', avg1)
 print('Median MarketCap: ', median1)
 print('')
@@ -165,7 +166,7 @@ if b == 'yes':
 
 q1 = input('Do you wanna order by MCap 24h % (yes/no): ')
 if q1 == 'yes':
-    sorted_list = sorted(data_for_table_l, key=lambda x: x[7])
+    sorted_list = sorted(data_for_table_l, key=lambda x: x[7], reverse=True)
     head = [
         'Nº',
         'Cryptos',

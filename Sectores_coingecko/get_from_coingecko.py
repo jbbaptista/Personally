@@ -47,6 +47,8 @@ volume_24h_perc_l = list()
 perc_vol_marketcap_l = list()
 market_cap_changes_24h_l = list()
 n_l = list()
+positive_marketcap_changes = list()
+negative_marketcap_changes = list()
 for i in range(len(response)):
     v = response[i]['name']
     id = response[i]['id']
@@ -58,6 +60,7 @@ for i in range(len(response)):
     except:
         market_cap = 0
         market_cap_changes_24h = 0
+        continue
     perc = round(market_cap / total_marketcap * 100, 2)
     try:
         volume_24h = round(float(response[i]['volume_24h']), 3)
@@ -80,6 +83,10 @@ for i in range(len(response)):
     id_l.append(id)
     market_cap_changes_24h_l.append(market_cap_changes_24h)
     n_l.append(n)
+    if market_cap_changes_24h > 0:
+        positive_marketcap_changes.append(market_cap_changes_24h)
+    elif market_cap_changes_24h <0:
+        negative_marketcap_changes.append(market_cap_changes_24h)
 
     # CALCULATIONS
 
@@ -95,6 +102,17 @@ for i in range(len(response)):
 
     a = (n, v, id, marketcap2, perc, volume_24h2, perc_volume, perc_vol_marketcap, market_cap_changes_24h)
     data_for_table_l.append(a)
+
+# PRINT MORE VALUES
+
+avg_marketcap_perc = round(np.average(market_cap_changes_24h_l), 3)
+print('Avg MCap 24h %: ', avg_marketcap_perc, '%')
+positive_avg_marketcap_perc = round(np.average(positive_marketcap_changes), 3)
+print('Positive sectors - Avg MCap 24h %: ', positive_avg_marketcap_perc, '%')
+negative_avg_marketcap_perc = round(np.average(negative_marketcap_changes), 3)
+print('Negative sectors - Avg MCap 24h %: ', negative_avg_marketcap_perc, '%')
+print('')
+
 
 # PRINT VALUES IN TABLE
 
@@ -114,7 +132,7 @@ if a == 'yes':
 
 q1 = input('Do you wanna order by the MCap 24h % (yes/no): ')
 if q1 == 'yes':
-    sorted_list = sorted(data_for_table_l, key=lambda x: x[8])
+    sorted_list = sorted(data_for_table_l, key=lambda x: x[8], reverse=True)
     head = ['n',
             'Sector',
             'id',
