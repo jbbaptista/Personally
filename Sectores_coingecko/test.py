@@ -1,191 +1,247 @@
 import requests
 import pprint
+import matplotlib.pyplot as plt
 from tabulate import tabulate
 import numpy as np
-from datetime import datetime
-import time
-
-
-def make_request_with_rate_limit_handling(url):
-    success = False
-    while not success:
-        response = requests.get(url)
-        json_response = response.json()
-        if 'error_message' in json_response:
-            if "You've exceeded the Rate Limit" in json_response['error_message']:
-                print("Rate limit exceeded. Waiting for 120 seconds.")
-                time.sleep(120)
-                continue
-        success = True
-    return json_response
-
+from matplotlib.table import Table
 
 print('')
-print('-- Lets start sector algo ')
+print('- GLOBAL INFO -')
 print('')
 
-print('Important note -> The sector needs to be the coingecko sector id (you can run the other script to know the id)')
+# CONNECT WITH THE API
+
+url = 'https://api.coingecko.com/api/v3/coins/categories'
+
+r = requests.get(url)
+response = r.json()
+
+# pprint.pprint(response)
+# exit()
+
+# GET TOTAL MARKET CAP
+
+url1 = 'https://api.coingecko.com/api/v3/global'
+
+r1 = requests.get(url1)
+response1 = r1.json()
+
+total_marketcap = round(response1['data']['total_market_cap']['usd'], 3)
+total_volume = round(response1['data']['total_volume']['usd'], 3)
+print('Total Crypto MarketCap: {0:12,.3f}'.format(total_marketcap))
+print('Total Crypto 24h Volume: {0:12,.3f}'.format(total_volume))
+
+bb = round(total_volume / total_marketcap * 100, 2)
+print('Total Volume 24h / Total MarketCap (%): ', bb ,'%')
+
 print('')
+# GET THE NAME OF THE SECTORES
 
-# Input
-a = input('Pick a sector (id coingecko): ')
-
-# Get data
-url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&category=' + a + '&order=market_cap_desc&per_page=100&page=1&sparkline=false'
-response = make_request_with_rate_limit_handling(url)
-
-# Work data
-name_l = list()
+sector_l = list()
+id_l = list()
 marketcap_l = list()
-volume_l = list()
-vol_marketcap_l = list()
 data_for_table_l = list()
-ticket_l = list()
-fdv_l = list()
-price_24h_changes_l = list()
-token_launch_date_l = list()
-
+market_share_perc_l = list()
+volume_24h_l = list()
+volume_24h_perc_l = list()
+perc_vol_marketcap_l = list()
+market_cap_changes_24h_l = list()
+n_l = list()
+positive_marketcap_changes = list()
+negative_marketcap_changes = list()
 for i in range(len(response)):
-    name = response[i]['name']
-    market_cap = round(float(response[i]['market_cap']), 3)
-    volume = round(float(response[i]['total_volume']), 3)
-    ticket = response[i]['symbol']
-    coin_id = response[i]['id']  # Get the coin ID to request individual coin data
-
-    # Get individual coin data to obtain genesis_date
-    coin_url = f'https://api.coingecko.com/api/v3/coins/{coin_id}?localization=false&community_data=false&developer_data=false'
-    coin_response = make_request_with_rate_limit_handling(coin_url)
+    v = response[i]['name']
+    id = response[i]['id']
+    n = i + 1
 
     try:
-        token_launch_date = coin_response['genesis_date']
-    except KeyError:
-        token_launch_date = 'N/A'
-
-    # If genesis_date is not available, use the first date from price chart
-    if token_launch_date is None or not isinstance(token_launch_date, str):
-        token_launch_date = 'N/A'
-
-    try:
-        datetime.strptime(token_launch_date, '%Y-%m-%d')
-    except ValueError:
-        success = False
-        while not success:
-            price_history_url = f'https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart?vs_currency=usd&days=max&interval=daily'
-            price_history_response = make_request_with_rate_limit_handling(price_history_url)
-
-            if 'prices' in price_history_response and price_history_response['prices']:
-                first_date = price_history_response['prices'][0][0] // 1000  # Convert to Unix timestamp (seconds)
-                token_launch_date = datetime.utcfromtimestamp(first_date).strftime('%Y-%m-%d')
-            else:
-                token_launch_date = 'N/A'
-            success = True
-
-    try:
-        price_24h_changes = round(float(response[i]['price_change_percentage_24h']), 3)
+        market_cap = round(float(response[i]['market_cap']), 3)
+        market_cap_changes_24h = round(float(response[i]['market_cap_change_24h']), 3)
     except:
-        price_24h_changes = 0
+        market_cap = 0
+        market_cap_changes_24h = 0
+        continue
+    perc = round(market_cap / total_marketcap * 100, 2)
     try:
-        fdv = round(float(response[i]['fully_diluted_valuation']), 3)
+        volume_24h = round(float(response[i]['volume_24h']), 3)
     except:
-        fdv = 0
+        volume_24h = 0
+    perc_volume = round(volume_24h / total_volume * 100, 2)
+    if market_cap != 0:
+        perc_vol_marketcap = round(volume_24h / market_cap * 100, 2)
+    else:
+        perc_vol_marketcap = 0
 
-    try:
-        vol_marketcap_r = round(volume / market_cap * 100, 2)
-    except:
-        vol_marketcap_r = 0
+    # INSERT INTO LISTS
+
+    sector_l.append(v)
+    marketcap_l.append(market_cap)
+    market_share_perc_l.append(perc)
+    volume_24h_l.append(volume_24h)
+    volume_24h_perc_l.append(perc_volume)
+    perc_vol_marketcap_l.append(perc_vol_marketcap)
+    id_l.append(id)
+    market_cap_changes_24h_l.append(market_cap_changes_24h)
+    n_l.append(n)
+    if market_cap_changes_24h > 0:
+        positive_marketcap_changes.append(market_cap_changes_24h)
+    elif market_cap_changes_24h <0:
+        negative_marketcap_changes.append(market_cap_changes_24h)
+
+    # CALCULATIONS
 
     if market_cap / 1000000 < 1000:
         marketcap2 = str(round(market_cap / 1000000, 3)) + ' M'
     else:
-        marketcap2 = str(round(market_cap / 1000000000, 3)) + ' B'
+        marketcap2 = str(round(market_cap/1000000000, 3)) + ' B'
 
-    if volume / 1000000 < 1000:
-        volume2 = str(round(volume / 1000000, 3)) + ' M'
+    if volume_24h / 1000000 < 1000:
+        volume_24h2 = str(round(volume_24h / 1000000, 3)) + ' M'
     else:
-        volume2 = str(round(volume / 1000000000, 3)) + ' B'
+        volume_24h2 = str(round(volume_24h / 1000000000, 3)) + ' B'
 
-    if fdv / 1000000 < 1000:
-        fdv2 = str(round(fdv / 1000000, 3)) + ' M'
-    else:
-        fdv2 = str(round(fdv / 1000000000, 3)) + ' B'
-
-    a = (i, name, ticket, marketcap2, fdv2, volume2, vol_marketcap_r, price_24h_changes, token_launch_date)
-
-    # Insert list
-
-    name_l.append(name)
-    marketcap_l.append(market_cap)
-    volume_l.append(volume)
-    vol_marketcap_l.append(vol_marketcap_r)
-    ticket_l.append(ticket)
-    fdv_l.append(fdv)
-    price_24h_changes_l.append(price_24h_changes)
-    token_launch_date_l.append(token_launch_date)
-
+    a = (n, v, id, marketcap2, perc, volume_24h2, perc_volume, perc_vol_marketcap, market_cap_changes_24h)
     data_for_table_l.append(a)
 
-    # Data values
+import matplotlib as mpl
 
-avg = round(float(np.average(marketcap_l)), 3)
-if avg / 1000000 < 1000:
-    avg1 = str(round(avg / 1000000, 3)) + ' M'
-else:
-    avg1 = str(round(avg / 1000000000, 3)) + ' B'
+def draw_table(data, headers, fontsize=10, table_scale=1.5, header_color='#40466e', row_colors=['#f1f1f2', '#ffffff'], edge_color='w', bbox=[0, 0, 1, 1]):
+    fig, ax = plt.subplots()
+    ax.axis('off')
+    ax.axis('tight')
 
-avg_fdv = round(float(np.average(fdv_l)), 3)
-if avg_fdv / 1000000 < 1000:
-    avg_fdv1 = str(round(avg_fdv / 1000000, 3)) + ' M'
-else:
-    avg_fdv1 = str(round(avg_fdv / 1000000000, 3)) + ' B'
+    table = Table(ax, bbox=bbox)
+    n_rows, n_columns = len(data) + 1, len(headers)
+    width, height = 1.0 / n_columns, 1.0 / n_rows
 
-median = np.median(marketcap_l)
-if median / 1000000 < 1000:
-    median1 = str(round(median / 1000000, 3)) + ' M'
-else:
-    median1 = str(round(median / 1000000000, 3)) + ' B'
+    # Add header cells
+    for j in range(n_columns):
+        table.add_cell(0, j, width, height, text=headers[j], loc='center', facecolor=header_color, fontsize=fontsize, fontweight='bold')
 
-median_fdv = np.median(fdv_l)
-if median_fdv / 1000000 < 1000:
-    median_fdv1 = str(round(median_fdv / 1000000, 3)) + ' M'
-else:
-    median_fdv1 = str(round(median_fdv / 1000000000, 3)) + ' B'
+    # Add data cells
+    for i in range(1, n_rows):
+        for j in range(n_columns):
+            table.add_cell(i, j, width, height, text=data[i-1][j], loc='center', facecolor=row_colors[i % len(row_colors)], fontsize=fontsize, edgecolor=edge_color)
 
+    # Set cell borders
+    for key, cell in table.get_celld().items():
+        cell.set_edgecolor(edge_color)
+
+    ax.add_table(table)
+    fig.set_size_inches(table_scale * n_columns, table_scale * n_rows)
+
+    return fig
+
+
+
+# PRINT MORE VALUES
+
+avg_marketcap_perc = round(np.average(market_cap_changes_24h_l), 3)
+print('Avg MCap 24h %: ', avg_marketcap_perc, '%')
+positive_avg_marketcap_perc = round(np.average(positive_marketcap_changes), 3)
+print('Positive sectors - Avg MCap 24h %: ', positive_avg_marketcap_perc, '%')
+negative_avg_marketcap_perc = round(np.average(negative_marketcap_changes), 3)
+print('Negative sectors - Avg MCap 24h %: ', negative_avg_marketcap_perc, '%')
 print('')
-print('Avg MarketCap: ', avg1)
-print('Median MarketCap: ', median1)
-print('')
-print('Avg FDV: ', avg_fdv1)
-print('Median FDV: ', median_fdv1)
-print('')
 
-# Graphs and tables
 
-b = input('Do you wanna see the table (yes/no): ')
-if b == 'yes':
-    head = [
-        'Nº',
-        'Cryptos',
-        'Ticket',
-        'MarketCap',
-        'Fdv',
-        'Volume 24h',
-        'Vol/MCap %',
-        '24h Changes %',
-        'Token Launch Date'
-    ]
+# PRINT VALUES IN TABLE
+
+a = input('You want to see the values in table (yes/no): ')
+if a == 'yes':
+    head = ['n',
+            'Sector',
+            'id',
+            'MarketCap',
+            'MCap-TotMCap %',
+            'Volume 24h',
+            'Vol-TotVol %',
+            'Vol-MCap %',
+            'MCap 24h %'
+            ]
     print(tabulate(data_for_table_l, headers=head, tablefmt='grid'))
 
-q1 = input('Do you wanna order by MCap 24h % (yes/no): ')
+    fig = draw_table(data_for_table_l, headers=head, fontsize=12, table_scale=2)
+    plt.savefig('table_image.png', dpi=300)
+    plt.show()
+
+q1 = input('Do you wanna order by the MCap 24h % (yes/no): ')
 if q1 == 'yes':
-    sorted_list = sorted(data_for_table_l, key=lambda x: x[7])
-    head = [
-        'Nº',
-        'Cryptos',
-        'Ticket',
-        'MarketCap',
-        'Fdv',
-        'Volume 24h',
-        'Vol/MCap %',
-        '24h Changes %'
-    ]
+    sorted_list = sorted(data_for_table_l, key=lambda x: x[8], reverse=True)
+    head = ['n',
+            'Sector',
+            'id',
+            'MarketCap',
+            'MCap-TotMCap %',
+            'Volume 24h',
+            'Vol-TotVol %',
+            'Vol-MCap %',
+            'MCap 24h %'
+            ]
     print(tabulate(sorted_list, headers=head, tablefmt='grid'))
+    sorted_list = sorted(data_for_table_l, key=lambda x: x[8], reverse=True)
+    fig = draw_table(sorted_list, headers=head, fontsize=12, table_scale=2)
+    plt.savefig('sorted_table_image.png', dpi=300)
+    plt.show()
+
+# CREATE GRAPH TO GET ALL INFO
+
+print('')
+b1 = input('Graphs (yes/no): ')
+if b1 == 'yes':
+    b = input('Graph by market cap (yes/no): ')
+    if b == 'yes':
+        fig, (ax1, ax2) = plt.subplots(2, sharex=True)
+        fig.suptitle ('All crypto sectores')
+
+        ax1.bar(sector_l, marketcap_l)
+        ax2.bar(sector_l, marketcap_l)
+
+        plt.yscale('log')
+        plt.xticks(fontsize=8, rotation='vertical')
+        plt.ylabel('MarketCap')
+
+
+        plt.tight_layout()
+        plt.subplots_adjust(hspace=0.05)
+        plt.show()
+
+    c = input('Graph Market share (yes/no): ')
+    if c =='yes':
+        plt.bar(sector_l, market_share_perc_l)
+        plt.title('Market share by sectores')
+        plt.ylabel('%')
+        plt.xticks(fontsize=8, rotation='vertical')
+
+        plt.tight_layout()
+        plt.show()
+
+    d = input('Graph for MarketCap and Volume (yes/no): ')
+    if d == 'yes':
+        fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
+        fig.suptitle('Info for all sectores')
+
+        size = np.arange(len(sector_l))
+
+        bar1 = ax1.bar(size, marketcap_l, 0.35, label='MarketCap')
+        bar2 = ax1.bar(size + 0.25, volume_24h_l, 0.35,  label='Volume 24h')
+
+        ax1.legend((bar1, bar2), ('MarketCap', 'Volume 24h'))
+
+        bar3 = ax2.bar(size, market_share_perc_l, 0.35, label = 'Market share %')
+        bar4 = ax2.bar(size + 0.5, volume_24h_perc_l, 0.35, label='Vol/Total Volume %')
+        bar5 = ax2.bar(size + 0.25, perc_vol_marketcap_l, 0.35, label = 'Vol/MarketCap %')
+
+        ax2.legend((bar3, bar4, bar5), ('Market share %', 'Vol/Total Volume %', 'Vol/MarketCap %'))
+
+        bar6 = ax3.bar(size, market_share_perc_l, 0.35, label = 'Market share %')
+        bar7 = ax3.bar(size + 0.5, volume_24h_perc_l, 0.35, label='Vol/Total Volume %')
+        bar8 = ax3.bar(size + 0.25, perc_vol_marketcap_l, 0.35, label = 'Vol/MarketCap %')
+
+        ax3.legend((bar6, bar7, bar8), ('Market share %', 'Vol/Total Volume %', 'Vol/MarketCap %'), prop={'size':6})
+
+        plt.yscale('log')
+
+        plt.xticks(size + 0.25, sector_l, fontsize=8, rotation='vertical')
+        plt.subplots_adjust(hspace=0.05)
+        plt.show()

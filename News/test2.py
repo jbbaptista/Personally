@@ -78,9 +78,6 @@ def get_crypto_news(crypto_name, api_key, from_date):
         print(f"Error: {news['message']}")
         return []
 
-    # Add this line to remove articles from 'biztoc' source
-    news['articles'] = [article for article in news['articles'] if article['source']['name'].lower() != 'biztoc.com']
-
     results = []
 
     # Iterate through articles and extract information
@@ -126,7 +123,7 @@ news = get_crypto_news(crypto_name, api_key, from_date)
 sorted_news = sorted(news, key=lambda x: x['importance'], reverse=True)
 
 # Filter the top N most important news articles
-N = 10
+N = 20
 top_news = sorted_news[:N]
 
 print('\n')

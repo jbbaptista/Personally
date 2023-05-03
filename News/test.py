@@ -8,13 +8,8 @@ import matplotlib.pyplot as plt
 import ssl
 import pandas as pd
 import webbrowser
-import html
-import re
 
-def clean_text(text):
-    cleaned_text = html.unescape(text)
-    cleaned_text = re.sub(r'[^\x00-\x7F]+', ' ', cleaned_text)
-    return cleaned_text
+
 
 try:
     _create_unverified_https_context = ssl._create_unverified_context
@@ -78,18 +73,14 @@ def get_crypto_news(crypto_name, api_key, from_date):
         print(f"Error: {news['message']}")
         return []
 
-    # Add this line to remove articles from 'biztoc' source
-    news['articles'] = [article for article in news['articles'] if article['source']['name'].lower() != 'biztoc.com']
-
     results = []
 
     # Iterate through articles and extract information
     for article in news['articles']:
         title = article['title']
         url = article['url']
-        description = article['description'].replace("â€", "'")  # Fix for "â€"
+        description = article['description']
         published_at = article['publishedAt']
-        source = article['source']['name']
 
         importance, sentiment_label, confidence_score = get_importance_score(description)
 
@@ -100,11 +91,11 @@ def get_crypto_news(crypto_name, api_key, from_date):
             'importance': importance,
             'sentiment_label': sentiment_label,
             'confidence_score': confidence_score,
-            'published_at': published_at,
-            'source': source
+            'published_at': published_at
         })
 
     return results
+
 
 # Example usage
 api_key = secret.api_key
@@ -126,7 +117,7 @@ news = get_crypto_news(crypto_name, api_key, from_date)
 sorted_news = sorted(news, key=lambda x: x['importance'], reverse=True)
 
 # Filter the top N most important news articles
-N = 10
+N = 20
 top_news = sorted_news[:N]
 
 print('\n')
@@ -148,12 +139,12 @@ print('-- Done')
 # Generate the HTML output
 output_file = "crypto_news.html"
 df = pd.DataFrame(top_news)
-df['Title'] = df.apply(lambda x: f'<a href="{x["url"]}">{clean_text(x["title"])}</a>', axis=1)
+df['Title'] = df.apply(lambda x: f'<a href="{x["url"]}">{x["title"]}</a>', axis=1)
 df['Published At'] = df['published_at'].apply(lambda x: x.split('T')[0])
 df['Confidence'] = df['confidence_score'].apply(confidence_label)
-df['Source'] = df.apply(lambda x: f'{x["source"]} - <a href="{x["url"]}">Link</a>', axis=1)  # Add source info and link
-df['Summary'] = df.index.to_series().apply(lambda x: f'{clean_text(df.loc[x, "summary"][:100])}... <span id="short-summary-{x}"><a href="#" onclick="toggleSummary({x})">View More</a></span><span id="full-summary-{x}" style="display:none;">{clean_text(df.loc[x, "summary"][100:])} <a href="#" onclick="toggleSummary({x})">View Less</a></span>')  # Add a "view more" button to view more info and "view less" button
-df = df[['Title', 'Published At', 'importance', 'sentiment_label', 'Confidence', 'Summary', 'Source']]
+df['Source'] = df['url'].apply(lambda x: f'<a href="{x}">Link</a>')  # Change the name Location to Source
+df['Summary'] = df.index.to_series().apply(lambda x: f'{df.loc[x, "summary"][:100]}... <a href="#" onclick="toggleSummary({x})">View More</a><span id="full-summary-{x}" style="display:none;">{df.loc[x, "summary"]}</span>')  # Add a "view more" button to view more info
+df = df[['title', 'Published At', 'importance', 'sentiment_label', 'Confidence', 'Summary', 'Source']]
 df.columns = ['Title', 'Date', 'Importance', 'Sentiment', 'Confidence', 'Summary', 'Source']
 
 html = df.to_html(escape=False, index=False)
@@ -161,27 +152,27 @@ html = html.replace('<table border="1" class="dataframe">', '<table class="dataf
 
 # Add CSS for better table formatting
 css = '''
-    <style>
-        body { font-family: Arial, sans-serif; font-size: 10px; }
-        .dataframe {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        .dataframe th, .dataframe td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        .dataframe th {
-            padding-top: 12px;
-            padding-bottom: 12px;
-            text-align: left;
-            background-color: #f2f2f2;
-            color: black;
-        }
-        .dataframe tr:nth-child(even) { background-color: #f2f2f2; }
-        .dataframe tr:hover { background-color: #ddd; }
-    </style>
-    '''
+<style>
+    body { font-family: Arial, sans-serif; font-size: 10px; }
+    .dataframe {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    .dataframe th, .dataframe td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+    .dataframe th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #f2f2f2;
+        color: black;
+    }
+    .dataframe tr:nth-child(even) { background-color: #f2f2f2; }
+    .dataframe tr:hover { background-color: #ddd; }
+</style>
+'''
 
 today = datetime.datetime.now().strftime('%Y-%m-%d')
 title = f"<h1>Important News About {crypto_name} Crypto Asset (From {from_date_str} to {today})</h1>"
@@ -190,13 +181,10 @@ js = '''
 <script>
     function toggleSummary(index) {
         var fullSummary = document.getElementById("full-summary-" + index);
-        var shortSummary = document.getElementById("short-summary-" + index);
         if (fullSummary.style.display === "none") {
             fullSummary.style.display = "inline";
-            shortSummary.style.display = "none";
         } else {
             fullSummary.style.display = "none";
-            shortSummary.style.display = "inline";
         }
     }
 </script>
@@ -209,4 +197,5 @@ print(f"Top {N} news articles saved to {output_file}")
 
 # Open the HTML file automatically
 webbrowser.open(output_file, new=2)
+
 
