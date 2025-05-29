@@ -6,6 +6,7 @@ Generate alpha
 Be welcome
 
 Connect with me,
-twitter : @drjuanitoh
+twitter : @0xjbaptista
 
-by @jbbaptista
+by @jbbaptista on tg
+jbbaptista@live.com on email
